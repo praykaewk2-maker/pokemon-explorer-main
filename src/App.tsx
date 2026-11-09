@@ -353,19 +353,13 @@ function RecommendedSection({
       {loading ? (
         <p className="section-message">Gathering a few favorites...</p>
       ) : pokemon.length ? (
-        <div className="pokemon-grid">
-          {pokemon.map((item, index) => (
-            <PokemonCard
-              key={item.id}
-              pokemon={item}
-              index={index}
-              idPrefix="recommended"
-              isFavorite={favoriteIds.has(item.id)}
-              onSelect={onPokemonSelect}
-              onToggleFavorite={onToggleFavorite}
-            />
-          ))}
-        </div>
+        <PokemonGrid
+          pokemon={pokemon}
+          idPrefix="recommended"
+          favoriteIds={favoriteIds}
+          onPokemonSelect={onPokemonSelect}
+          onToggleFavorite={onToggleFavorite}
+        />
       ) : (
         <p className="section-message">{emptyMessage}</p>
       )}
@@ -392,19 +386,14 @@ function RecentlyViewedSection({
         sortLabel="Sort recently viewed Pokémon"
       />
       {pokemon.length ? (
-        <div className="pokemon-grid recent-grid">
-          {pokemon.map((item, index) => (
-            <PokemonCard
-              key={item.id}
-              pokemon={item}
-              index={index}
-              idPrefix="recent"
-              isFavorite={favoriteIds.has(item.id)}
-              onSelect={onPokemonSelect}
-              onToggleFavorite={onToggleFavorite}
-            />
-          ))}
-        </div>
+        <PokemonGrid
+          pokemon={pokemon}
+          idPrefix="recent"
+          favoriteIds={favoriteIds}
+          onPokemonSelect={onPokemonSelect}
+          onToggleFavorite={onToggleFavorite}
+          recent
+        />
       ) : (
         <p className="section-message">Your next discovery will show up here.</p>
       )}
@@ -448,19 +437,14 @@ function HistoryPage({
           onClear={onClearHistory}
         />
         {items.length ? (
-          <div className="pokemon-grid recent-grid">
-            {items.map((item, index) => (
-              <PokemonCard
-                key={`${item.id}-history`}
-                pokemon={item}
-                index={index}
-                idPrefix="history"
-                isFavorite={favoriteIds.has(item.id)}
-                onSelect={onPokemonSelect}
-                onToggleFavorite={onToggleFavorite}
-              />
-            ))}
-          </div>
+          <PokemonGrid
+            pokemon={items}
+            idPrefix="history"
+            favoriteIds={favoriteIds}
+            onPokemonSelect={onPokemonSelect}
+            onToggleFavorite={onToggleFavorite}
+            recent
+          />
         ) : (
           <p className="section-message">No Pokémon have been viewed yet.</p>
         )}
@@ -506,19 +490,14 @@ function FavoritesPage({
           onClear={onClearFavorites}
         />
         {pokemon.length ? (
-          <div className="pokemon-grid recent-grid">
-            {pokemon.map((item, index) => (
-              <PokemonCard
-                key={`${item.id}-favorite`}
-                pokemon={item}
-                index={index}
-                idPrefix="favorite"
-                isFavorite={favoriteIds.has(item.id)}
-                onSelect={onPokemonSelect}
-                onToggleFavorite={onToggleFavorite}
-              />
-            ))}
-          </div>
+          <PokemonGrid
+            pokemon={pokemon}
+            idPrefix="favorite"
+            favoriteIds={favoriteIds}
+            onPokemonSelect={onPokemonSelect}
+            onToggleFavorite={onToggleFavorite}
+            recent
+          />
         ) : (
           <p className="section-message">Favorite a Pokémon to save it here.</p>
         )}
@@ -584,6 +563,40 @@ interface PokemonCardProps {
   highlighted?: boolean;
   onSelect: (pokemon: PokemonSummary) => void;
   onToggleFavorite?: (pokemon: PokemonSummary) => void;
+}
+
+interface PokemonGridProps {
+  pokemon: PokemonSummary[];
+  idPrefix: string;
+  favoriteIds: Set<number>;
+  onPokemonSelect: (pokemon: PokemonSummary) => void;
+  onToggleFavorite: (pokemon: PokemonSummary) => void;
+  recent?: boolean;
+}
+
+function PokemonGrid({
+  pokemon,
+  idPrefix,
+  favoriteIds,
+  onPokemonSelect,
+  onToggleFavorite,
+  recent = false,
+}: PokemonGridProps) {
+  return (
+    <div className={recent ? "pokemon-grid recent-grid" : "pokemon-grid"}>
+      {pokemon.map((item, index) => (
+        <PokemonCard
+          key={item.id}
+          pokemon={item}
+          index={index}
+          idPrefix={idPrefix}
+          isFavorite={favoriteIds.has(item.id)}
+          onSelect={onPokemonSelect}
+          onToggleFavorite={onToggleFavorite}
+        />
+      ))}
+    </div>
+  );
 }
 
 function PokemonCard({
